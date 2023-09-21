@@ -60,8 +60,21 @@ fun rememberBaseballGameState(
         {
             val result = transition(event)
 
-            if (result is StateMachine.Transition.Valid && result.sideEffect is SideEffect.AnnounceHomeRun) {
-                Toast.makeText(context, "HOME RUN!!!", Toast.LENGTH_SHORT).show()
+            if (result is StateMachine.Transition.Valid) {
+                when (result.sideEffect) {
+                    SideEffect.AnnounceHomeRun ->
+                        Toast.makeText(context, "HOME RUN!!!", Toast.LENGTH_SHORT).show()
+                    SideEffect.WarnGameNotOver ->
+                        Toast.makeText(context, "Game Is Not Over", Toast.LENGTH_SHORT).show()
+                    SideEffect.WarnGameOver ->
+                        Toast.makeText(context, "Game Is Over", Toast.LENGTH_SHORT).show()
+                    SideEffect.WarnInningSideNotOver ->
+                        Toast.makeText(context, "Inning Side Is Not Over", Toast.LENGTH_SHORT)
+                            .show()
+                    SideEffect.WarnInningSideOver ->
+                        Toast.makeText(context, "Inning Side Is Over", Toast.LENGTH_SHORT).show()
+                    null -> { /* no-op */ }
+                }
             }
         }
     }
@@ -83,26 +96,30 @@ fun rememberBaseballGameState(
     val outs = "${state.gameState.outs} Out(s)"
 
     val validTransitions = when (state) {
+        is State.GameStarted -> ValidActionsDisplayModel(
+            stateName = "Game Started",
+            actions = listOf(
+                ActionDisplayModel("Play Ball", requestTransition(Event.OnPlayBall))
+            ),
+        )
+
+        is State.InningSideStarted -> ValidActionsDisplayModel(
+            stateName = "Inning Side Start",
+            actions = listOf(
+                ActionDisplayModel(
+                    "Batter Up",
+                    requestTransition(Event.OnBatterUp),
+                )
+            ),
+        )
+
         is State.BatterUp -> ValidActionsDisplayModel(
             stateName = "Batter Up",
             actions = listOf(
                 ActionDisplayModel("Batter Out", requestTransition(Event.OnBatterOut)),
                 ActionDisplayModel("Walk Batter", requestTransition(Event.OnBatterWalk)),
-                ActionDisplayModel("Live Ball", requestTransition(Event.OnBatterContact)),
-            ),
-        )
-
-        is State.GameOver -> ValidActionsDisplayModel(
-            stateName = "Game Over",
-            actions = listOf(
-                ActionDisplayModel("New Game", requestTransition(Event.OnNewGame))
-            ),
-        )
-
-        is State.GameStarted -> ValidActionsDisplayModel(
-            stateName = "Game Started",
-            actions = listOf(
-                ActionDisplayModel("Play Ball", requestTransition(Event.OnPlayBall))
+                ActionDisplayModel("Contact", requestTransition(Event.OnBatterContact)),
+                ActionDisplayModel("Game Over", requestTransition(Event.OnGameOver)),
             ),
         )
 
@@ -117,6 +134,29 @@ fun rememberBaseballGameState(
                     requestTransition(Event.OnHit(HitType.HOME_RUN))
                 ),
                 ActionDisplayModel("Defensive Out", requestTransition(Event.OnDefensiveOut))
+            ),
+        )
+
+        is State.BatterOut -> ValidActionsDisplayModel(
+            stateName = "Batter Out",
+            actions = listOf(
+                ActionDisplayModel("Side Retired", requestTransition(Event.OnSideRetired)),
+                ActionDisplayModel("Batter Up", requestTransition(Event.OnBatterUp)),
+            ),
+        )
+
+        is State.InningSideEnded -> ValidActionsDisplayModel(
+            stateName = "Inning Side End",
+            actions = listOf(
+                ActionDisplayModel("Advance Inning", requestTransition(Event.OnNextInningSide)),
+                ActionDisplayModel("Game Over", requestTransition(Event.OnGameOver)),
+            ),
+        )
+
+        is State.GameOver -> ValidActionsDisplayModel(
+            stateName = "Game Over",
+            actions = listOf(
+                ActionDisplayModel("New Game", requestTransition(Event.OnNewGame))
             ),
         )
     }
