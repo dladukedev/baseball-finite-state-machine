@@ -88,7 +88,7 @@ fun rememberBaseballGameState(
             actions = listOf(
                 ActionDisplayModel("Batter Out", requestTransition(Event.OnBatterOut)),
                 ActionDisplayModel("Walk Batter", requestTransition(Event.OnBatterWalk)),
-                ActionDisplayModel("Live Ball", requestTransition(Event.OnLiveBall)),
+                ActionDisplayModel("Live Ball", requestTransition(Event.OnBatterContact)),
             ),
         )
 

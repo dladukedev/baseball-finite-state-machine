@@ -36,7 +36,7 @@ sealed class Event {
 
     object OnBatterOut : Event()
     object OnBatterWalk : Event()
-    object OnLiveBall : Event()
+    object OnBatterContact : Event()
 
     data class OnHit(val hitType: HitType) : Event()
     object OnDefensiveOut : Event()
@@ -71,7 +71,7 @@ val baseballStateMachine = StateMachine.create<State, Event, SideEffect> {
             }
         }
 
-        on<Event.OnLiveBall> {
+        on<Event.OnBatterContact> {
             transitionTo(State.LiveBall(gameState))
         }
 
