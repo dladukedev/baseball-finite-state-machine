@@ -2,7 +2,6 @@ package com.dladukedev.baseballstatemachine.statemachine
 
 import com.dladukedev.baseballstatemachine.statemachine.guards.isGameOver
 import com.dladukedev.baseballstatemachine.statemachine.guards.isSideOut
-import com.dladukedev.baseballstatemachine.statemachine.guards.isWalkoffWin
 import com.dladukedev.baseballstatemachine.statemachine.models.Bases
 import com.dladukedev.baseballstatemachine.statemachine.models.HitType
 import com.dladukedev.baseballstatemachine.statemachine.models.Inning
@@ -14,7 +13,7 @@ import com.dladukedev.baseballstatemachine.statemachine.transforms.recordWalk
 import com.tinder.StateMachine
 
 data class GameState(
-    val inning: Inning = Inning(1, InningSide.TOP),
+    val inning: Inning = Inning(8, InningSide.TOP),
     val homeScore: Int = 0,
     val awayScore: Int = 0,
     val outs: Int = 0,
@@ -78,7 +77,7 @@ val baseballStateMachine = StateMachine.create<State, Event, SideEffect> {
         on<Event.OnBatterWalk> {
             val newState = recordWalk(gameState)
 
-            if (isWalkoffWin(newState)) {
+            if (isGameOver(newState)) {
                 transitionTo(State.GameOver(newState))
             } else {
                 transitionTo(State.BatterUp(newState))
@@ -93,7 +92,7 @@ val baseballStateMachine = StateMachine.create<State, Event, SideEffect> {
             val sideEffect =
                 if (it.hitType == HitType.HOME_RUN) SideEffect.AnnounceHomeRun else null
 
-            if (isWalkoffWin(newState)) {
+            if (isGameOver(newState)) {
                 transitionTo(State.GameOver(newState))
             } else {
                 transitionTo(State.BatterUp(newState), sideEffect)
