@@ -15,9 +15,7 @@ fun isGameOver(gameState: GameState): Boolean {
 
     val isHomeTeamWinSkipBottomOfInning = isHomeTeamWinning && isTopOfLastInning && isSideOut
 
-    val isLastOrExtraInnings = gameState.inning.number >= 9
-
-    val isWalkOffWin = isLastOrExtraInnings && isHomeTeamWinning
+    val isWalkOffWin = isLastInning && isHomeTeamWinning
 
     return isGameOverInRegulation || isHomeTeamWinSkipBottomOfInning || isWalkOffWin
 }
