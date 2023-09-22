@@ -93,7 +93,7 @@ val baseballStateMachine = StateMachine.create<State, Event, SideEffect> {
                 if (it.hitType == HitType.HOME_RUN) SideEffect.AnnounceHomeRun else null
 
             if (isGameOver(newState)) {
-                transitionTo(State.GameOver(newState))
+                transitionTo(State.GameOver(newState), sideEffect)
             } else {
                 transitionTo(State.BatterUp(newState), sideEffect)
             }
