@@ -13,7 +13,7 @@ import com.dladukedev.baseballstatemachine.statemachine.transforms.recordWalk
 import com.tinder.StateMachine
 
 data class GameState(
-    val inning: Inning = Inning(8, InningSide.TOP),
+    val inning: Inning = Inning(1, InningSide.TOP),
     val homeScore: Int = 0,
     val awayScore: Int = 0,
     val outs: Int = 0,
